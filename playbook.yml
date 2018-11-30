@@ -1,0 +1,21 @@
+- name: Hello World Sample
+  hosts: all
+  tasks:
+    - name: Hello Message
+      debug:
+        msg: "Hello World!"
+- name: Read entropy_avail values
+  command: cat /proc/sys/kernel/random/entropy_avail
+  register: entropy_avail
+  tags: entropy
+
+- name: print entropy_avail
+  debug:
+    msg: "{{ entropy_avail.stdout }}"
+  tags: entropy
+
+- name: Install rng-tools if needed
+  yum:
+    name: ['rng-tools']
+  when: entropy_avail.stdout|int < 1024
+  tags: entropy      
